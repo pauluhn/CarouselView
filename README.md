@@ -1,5 +1,7 @@
 This library simplifies the implementation of carousel-style interfaces in SwiftUI applications while maintaining smooth, infinite scrolling functionality.
 
+![CarouselView](Screenshot/CarouselView.gif)
+
 ## Features
 ♾️ Infinite scrolling support
 
