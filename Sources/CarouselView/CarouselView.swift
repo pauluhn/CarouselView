@@ -103,7 +103,6 @@ public struct CarouselView<T, Content: View>: View {
         }
         .frame(height: height)
         .clipped()
-//        .background(Color.gray)
         .onAppear { constructTabItem() }
     }
     
