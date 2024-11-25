@@ -51,13 +51,13 @@ public struct CarouselView<T, Content: View>: View {
                 HStack(spacing: spacing) {
                     content(tabItem[0])
                         .frame(width: geometry.size.width)
-                        .onHeightChange { self.height = max(self.height, $0) }
+                        .onHeightChanged { self.height = max(self.height, $0) }
                     content(tabItem[1])
                         .frame(width: geometry.size.width)
-                        .onHeightChange { self.height = max(self.height, $0) }
+                        .onHeightChanged { self.height = max(self.height, $0) }
                     content(tabItem[2])
                         .frame(width: geometry.size.width)
-                        .onHeightChange { self.height = max(self.height, $0) }
+                        .onHeightChanged { self.height = max(self.height, $0) }
                 }
                 .offset(x: dragOffsetX)
                 .onAppear {

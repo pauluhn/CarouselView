@@ -8,7 +8,7 @@
 import SwiftUI
 
 extension View {
-    func onHeightChange(perform action: @escaping (CGFloat) -> Void) -> some View {
+    func onHeightChanged(perform action: @escaping (CGFloat) -> Void) -> some View {
         self
         .background(
             GeometryReader { geometry in
@@ -16,8 +16,6 @@ extension View {
                     .preference(key: HeightPreferenceKey.self, value: geometry.size.height)
             }
         )
-        .onPreferenceChange(HeightPreferenceKey.self) { value in
-            action(value)
-        }
+        .onPreferenceChange(HeightPreferenceKey.self, perform: action)
     }
 }
