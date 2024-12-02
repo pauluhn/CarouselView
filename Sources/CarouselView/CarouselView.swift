@@ -65,7 +65,7 @@ public struct CarouselView<T, Content: View>: View {
                 }
                 .contentShape(.interaction, Rectangle())
                 .gesture(
-                    DragGesture().onChanged { value in
+                    DragGesture(minimumDistance: 0).onChanged { value in
                         dragOffsetX = dragOffsetX + (value.translation.width - previousOffsetX)
                         previousOffsetX = value.translation.width
                     }.onEnded { value in
@@ -76,7 +76,7 @@ public struct CarouselView<T, Content: View>: View {
                         let isReachedThreashold = abs(value.translation.width) > geometry.size.width / 3
                         
                         if !isReachedThreashold {
-                            withAnimation(.linear) {
+                            withAnimation {
                                 dragOffsetX = -(geometry.size.width + spacing)
                             }
                             return
@@ -91,7 +91,7 @@ public struct CarouselView<T, Content: View>: View {
                             isForward = false
                         }
                         
-                        withAnimation(.linear) {
+                        withAnimation {
                             dragOffsetX = isForward ? -geometry.size.width * 2 : 0
                         }
                         
