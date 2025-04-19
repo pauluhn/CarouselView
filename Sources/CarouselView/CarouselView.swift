@@ -18,7 +18,10 @@ public struct CarouselView<T, Content: View>: View {
     @State private var dragOffsetX: CGFloat = 0.0
     @State private var previousOffsetX: CGFloat = 0.0
     @State private var tabItem: [T] = []
-    
+
+    private var isFirst: Bool { selectedIndex == 0 }
+    private var isLast: Bool { selectedIndex == items.count - 1 }
+
     public init(
         _ items: [T],
         spacing: CGFloat = 0.0,
@@ -49,13 +52,13 @@ public struct CarouselView<T, Content: View>: View {
         GeometryReader { geometry in
             if !tabItem.isEmpty {
                 HStack(spacing: spacing) {
-                    content(tabItem[0])
+                    firstView
                         .frame(width: geometry.size.width)
                         .onHeightChanged { self.height = max(self.height, $0) }
                     content(tabItem[1])
                         .frame(width: geometry.size.width)
                         .onHeightChanged { self.height = max(self.height, $0) }
-                    content(tabItem[2])
+                    lastView
                         .frame(width: geometry.size.width)
                         .onHeightChanged { self.height = max(self.height, $0) }
                 }
@@ -72,21 +75,26 @@ public struct CarouselView<T, Content: View>: View {
                         defer {
                             previousOffsetX = 0
                         }
-                        
-                        let isReachedThreashold = abs(value.translation.width) > geometry.size.width / 3
-                        
-                        if !isReachedThreashold {
+                        let resetClosure = {
                             withAnimation {
                                 dragOffsetX = -(geometry.size.width + spacing)
                             }
+                        }
+
+                        let isReachedThreshold = abs(value.translation.width) > geometry.size.width / 3
+                        
+                        if !isReachedThreshold {
+                            resetClosure()
                             return
                         }
                         
                         let isForward: Bool
                         if value.startLocation.x > value.location.x {
+                            guard !isLast else { resetClosure(); return }
                             selectedIndex = nextIndex()
                             isForward = true
                         } else {
+                            guard !isFirst else { resetClosure(); return }
                             selectedIndex = previousIndex()
                             isForward = false
                         }
@@ -96,16 +104,36 @@ public struct CarouselView<T, Content: View>: View {
                         }
                         
                         dragOffsetX = -(geometry.size.width + spacing)
-                        constructTabItem()
                     }
                 )
+                .onChange(of: selectedIndex) { _ in
+                    constructTabItem()
+                }
             }
         }
         .frame(height: height)
         .clipped()
         .onAppear { constructTabItem() }
     }
-    
+
+    @ViewBuilder
+    private var firstView: some View {
+        if !isFirst {
+            content(tabItem[0])
+        } else {
+            Color.clear
+        }
+    }
+
+    @ViewBuilder
+    private var lastView: some View {
+        if !isLast {
+            content(tabItem[2])
+        } else {
+            Color.clear
+        }
+    }
+
     private func constructTabItem() {
         if items.isEmpty {
             tabItem = []
